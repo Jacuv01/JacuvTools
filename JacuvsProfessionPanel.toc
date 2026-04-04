@@ -1,0 +1,10 @@
+## Interface: 120000
+## Title: Jacuv's Profession Panel (Auto)
+## Notes: Reposiciona automáticamente el botón Create arriba del Start Order en órdenes
+## Version: 1.0.0
+## Author: Jacuvs
+## SavedVariables: JacuvsProfessionPanelDB
+
+ButtonMover.lua
+ProfessionHooks.lua
+Core.lua

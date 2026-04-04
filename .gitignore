@@ -1,0 +1,16 @@
+# WoW Addon specific
+*.bak
+*.tmp
+*.cache
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*~
