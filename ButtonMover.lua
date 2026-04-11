@@ -94,8 +94,28 @@ local function StartPersistentPositioning()
         persistentTicker:Cancel()
     end
     
+    local consecutiveSuccesses = 0
+    local maxConsecutive = 3  -- Stop after 3 successful positioning attempts
+    
     persistentTicker = C_Timer.NewTicker(1, function()
-        MoveCreateButton()
+        if MoveCreateButton() then
+            consecutiveSuccesses = consecutiveSuccesses + 1
+            if consecutiveSuccesses >= maxConsecutive then
+                -- Position is stable, reduce frequency
+                persistentTicker:Cancel()
+                
+                -- Set up a slower maintenance ticker
+                persistentTicker = C_Timer.NewTicker(5, function()
+                    if not MoveCreateButton() then
+                        -- Position lost, restart frequent positioning
+                        persistentTicker:Cancel()
+                        StartPersistentPositioning()
+                    end
+                end)
+            end
+        else
+            consecutiveSuccesses = 0
+        end
     end)
 end
 
@@ -119,8 +139,16 @@ local function OnProfessionsFrameShow()
         setupTicker:Cancel()
     end
     
+    local attempts = 0
+    local maxAttempts = 20
+    
     setupTicker = C_Timer.NewTicker(0.5, function()
+        attempts = attempts + 1
+        
         if CheckAndStartPositioning() then
+            setupTicker:Cancel()
+            setupTicker = nil
+        elseif attempts >= maxAttempts then
             setupTicker:Cancel()
             setupTicker = nil
         end
@@ -155,8 +183,15 @@ end
 
 function ButtonMover:Initialize()
     if not SetupProfessionsFrameHooks() then
+        local attempts = 0
+        local maxAttempts = 30
+        
         local waitTicker = C_Timer.NewTicker(1, function()
+            attempts = attempts + 1
+            
             if SetupProfessionsFrameHooks() then
+                waitTicker:Cancel()
+            elseif attempts >= maxAttempts then
                 waitTicker:Cancel()
             end
         end)
