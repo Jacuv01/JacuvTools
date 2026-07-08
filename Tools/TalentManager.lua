@@ -7,6 +7,7 @@ local talentButtons = {}
 local originalSpentPoints = 0
 local checkTicker = nil
 local stateUpdateTicker = nil
+local waitTicker = nil
 
 local UpdateButtonStates
 
@@ -57,14 +58,6 @@ local function GetApplyButton()
         return ProfessionsFrame.SpecPage.ApplyButton
     end
     return nil
-end
-
-local function SimulateButtonClick(button)
-    if button and button:IsVisible() and button:IsEnabled() then
-        button:Click()
-        return true
-    end
-    return false
 end
 
 local function AddOnePoint()
@@ -367,16 +360,55 @@ function TalentManager:Initialize()
     local waitAttempts = 0
     local maxWaitAttempts = 30
     
-    local waitTicker = C_Timer.NewTicker(1, function()
+    if waitTicker then
+        waitTicker:Cancel()
+    end
+
+    waitTicker = C_Timer.NewTicker(1, function()
         waitAttempts = waitAttempts + 1
         
         if ProfessionsFrame then
             SetupSpecPageHooks()
             waitTicker:Cancel()
+            waitTicker = nil
         elseif waitAttempts >= maxWaitAttempts then
             waitTicker:Cancel()
+            waitTicker = nil
         end
     end)
+end
+
+function TalentManager:Cleanup()
+    if checkTicker then
+        checkTicker:Cancel()
+        checkTicker = nil
+    end
+    
+    if stateUpdateTicker then
+        stateUpdateTicker:Cancel()
+        stateUpdateTicker = nil
+    end
+
+    if waitTicker then
+        waitTicker:Cancel()
+        waitTicker = nil
+    end
+    
+    local originalSpendButton = GetSpendPointsButton()
+    if originalSpendButton then
+        originalSpendButton:Show()
+    end
+    
+    if talentButtons then
+        for i, button in ipairs(talentButtons) do
+            if button then
+                button:Hide()
+                button:SetParent(nil)
+                button:ClearAllPoints()
+            end
+        end
+        talentButtons = {}
+    end
 end
 
 function TalentManager:GetStatus()
@@ -391,31 +423,3 @@ end
 function TalentManager:ResetState()
     originalSpentPoints = 0
 end
-
-function TalentManager:Cleanup()
-    if checkTicker then
-        checkTicker:Cancel()
-        checkTicker = nil
-    end
-    
-    print("Jacuv: Limpiando TalentManager")
-    
-    -- Restaurar el botón SpendPointsButton original
-    local originalSpendButton = GetSpendPointsButton()
-    if originalSpendButton then
-        originalSpendButton:Show()
-        print("Jacuv: Botón SpendPointsButton original restaurado en cleanup")
-    end
-    
-    if talentButtons then
-        for i, button in ipairs(talentButtons) do
-            if button then
-                button:Hide()
-                button:SetParent(nil)
-            end
-        end
-        talentButtons = {}
-    end
-end
-
-print("Jacuv: TalentManager.lua completamente cargado")

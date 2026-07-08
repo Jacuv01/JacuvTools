@@ -1,0 +1,15 @@
+## Interface: 120000
+## Title: JacuvTools
+## Notes: Conjunto de herramientas para World of Warcraft
+## Version: 1.0.0
+## Author: Jacuv
+## SavedVariables: JacuvToolsDB
+
+Model\\Config.lua
+Model\\ToolManager.lua
+View\\MinimapButton.lua
+View\\MainWindow.lua
+Controller\\MainController.lua
+Tools\\ButtonMover.lua
+Tools\\TalentManager.lua
+Core.lua

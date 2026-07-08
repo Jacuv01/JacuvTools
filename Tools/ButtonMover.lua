@@ -5,6 +5,7 @@ addon.ButtonMover = ButtonMover
 
 local persistentTicker = nil
 local setupTicker = nil
+local waitTicker = nil
 
 local function MoveCreateButton()
     if not ProfessionsFrame or 
@@ -95,19 +96,16 @@ local function StartPersistentPositioning()
     end
     
     local consecutiveSuccesses = 0
-    local maxConsecutive = 3  -- Stop after 3 successful positioning attempts
+    local maxConsecutive = 3
     
     persistentTicker = C_Timer.NewTicker(1, function()
         if MoveCreateButton() then
             consecutiveSuccesses = consecutiveSuccesses + 1
             if consecutiveSuccesses >= maxConsecutive then
-                -- Position is stable, reduce frequency
                 persistentTicker:Cancel()
                 
-                -- Set up a slower maintenance ticker
                 persistentTicker = C_Timer.NewTicker(5, function()
                     if not MoveCreateButton() then
-                        -- Position lost, restart frequent positioning
                         persistentTicker:Cancel()
                         StartPersistentPositioning()
                     end
@@ -186,19 +184,25 @@ function ButtonMover:Initialize()
         local attempts = 0
         local maxAttempts = 30
         
-        local waitTicker = C_Timer.NewTicker(1, function()
+        if waitTicker then
+            waitTicker:Cancel()
+        end
+
+        waitTicker = C_Timer.NewTicker(1, function()
             attempts = attempts + 1
             
             if SetupProfessionsFrameHooks() then
                 waitTicker:Cancel()
+                waitTicker = nil
             elseif attempts >= maxAttempts then
                 waitTicker:Cancel()
+                waitTicker = nil
             end
         end)
     end
 end
 
-function ButtonMover:StopAllTimers()
+function ButtonMover:Cleanup()
     if persistentTicker then
         persistentTicker:Cancel()
         persistentTicker = nil
@@ -207,4 +211,12 @@ function ButtonMover:StopAllTimers()
         setupTicker:Cancel()
         setupTicker = nil
     end
+    if waitTicker then
+        waitTicker:Cancel()
+        waitTicker = nil
+    end
+end
+
+function ButtonMover:StopAllTimers()
+    self:Cleanup()
 end
