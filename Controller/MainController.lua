@@ -34,6 +34,14 @@ function MainController:RegisterTools()
     if addon.TalentManager then
         addon.ToolManager:RegisterTool("talentManager", addon.TalentManager)
     end
+
+    if addon.XPBarMover then
+        addon.ToolManager:RegisterTool("xpBarMover", addon.XPBarMover)
+    end
+
+    if addon.PersonalResourceEnforcer then
+        addon.ToolManager:RegisterTool("personalResourceEnforcer", addon.PersonalResourceEnforcer)
+    end
 end
 
 function MainController:OnToolToggled(toolName, enabled)

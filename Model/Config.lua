@@ -20,6 +20,16 @@ Config.defaults = {
             enabled = true,
             name = "Talent Manager",
             description = "Botones personalizados para puntos de talento"
+        },
+        xpBarMover = {
+            enabled = true,
+            name = "XP Bar Mover",
+            description = "Mueve las barras de experiencia y reputacion hacia arriba"
+        },
+        personalResourceEnforcer = {
+            enabled = true,
+            name = "Personal Resource Display",
+            description = "Mantiene siempre activa la opcion Personal Resource Display"
         }
     }
 }

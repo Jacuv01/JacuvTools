@@ -12,4 +12,6 @@ View\\MainWindow.lua
 Controller\\MainController.lua
 Tools\\ButtonMover.lua
 Tools\\TalentManager.lua
+Tools\\XPBarMover.lua
+Tools\\PersonalResourceEnforcer.lua
 Core.lua
